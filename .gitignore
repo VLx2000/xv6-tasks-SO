@@ -53,6 +53,7 @@ dkms.conf
 
 # xv6 compilados
 
+_cat
 _echo
 _forktest
 _grep
@@ -71,3 +72,8 @@ _zombie
 kernel
 *.asm
 *.sym
+bootblock
+entryother
+initcode
+mkfs
+vectors.S
