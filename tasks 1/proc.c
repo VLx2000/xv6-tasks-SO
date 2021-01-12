@@ -529,6 +529,31 @@ procdump(void)
       for(i=0; i<10 && pc[i] != 0; i++)
         cprintf(" %p", pc[i]);
     }
+    uint tabela_pag[20];  //vetor q ira armazenar os endereços
+    int cont = 0; //contador da tabela de paginas
+
+    cprintf("\nPage tables:\n memory location of page directory = %x\n", V2P(p->pgdir));  //imprime endereço fisico
+    for (int i = 0; i < NPDENTRIES; i++)  //ira percorrer todas as entradas de pag por diretorio
+    {   
+        if ((PTE_FLAGS(p->pgdir[i]) & 0x020) && (PTE_FLAGS(p->pgdir[i]) & PTE_U))   //se pag for acessada (32 - dec / 0x020 - hex) e for de usuario 
+        {      
+            pte_t* ptable = (pte_t*) PTE_ADDR(p->pgdir[i]);
+            cprintf(" pdir PTE %d, %d:\n  memory location of page table = %x\n", i, (uint)ptable >> 12, ptable);
+            for (int j = 0; j < NPTENTRIES; j++)  //percorre tabela de paginas
+            {   
+                pte_t* endereco = (pte_t*)((pte_t*)P2V(ptable))[j];   //endereco recebe endereço virtual
+                uint flags = PTE_FLAGS(endereco);
+                if ((flags & 0x020) && (flags & PTE_U))
+                {      
+                    cprintf("  ptbl PTE %d, %d, %x\n", j, (uint)endereco >> 12, PTE_ADDR(endereco));
+                    tabela_pag[cont++] = (uint) V2P(endereco);
+                }
+            }
+        }
+    }
+    cprintf("Page mappings:\n");
+    for(int i = 0; i < cont; i++)
+        cprintf("%d -> %d\n",tabela_pag[i] >> 12,(V2P(tabela_pag[i])) >> 12); //imprime endereços armazenados
     cprintf("\n");
   }
 }
