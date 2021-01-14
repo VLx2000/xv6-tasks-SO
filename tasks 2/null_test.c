@@ -1,18 +1,13 @@
+#include "syscall.h"
 #include "types.h"
-#include "stat.h"
 #include "user.h"
-#define NULL ((void *)0)
 
-int
-main()
+#define NULL 0
+#define stdout 1
+int main()
 {
-    int x, y;
-    int *p;
-    x = 1000;
-    p = &x;
-    x = *p;
-    *p = NULL;
-    y = *p;
-    printf(1, "Ponteiro NULO: %p", p);
+    printf(stdout, "This is a test for NULL pointer deference \n");
+    int *p = NULL;
+    printf(1, "*p: %d \n",*p);
     exit();
 }
