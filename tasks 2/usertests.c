@@ -1568,7 +1568,7 @@ validatetest(void)
   printf(stdout, "validate test\n");
   hi = 1100*1024;
 
-  for(p = 4096; p <= (uint)hi; p += 4096){
+  for(p = 4096; p <= (uint)hi; p += 4096){     // mudando de p = 0 para p = 4096 //!MODIFICADO
     if((pid = fork()) == 0){
       // try to crash the kernel by passing in a badly placed integer
       validateint((int*)p);
