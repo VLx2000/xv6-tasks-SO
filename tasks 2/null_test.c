@@ -8,7 +8,7 @@ main()
 {
     int x, y;
     int *p;
-    x = 1;
+    x = 1000;
     p = &x;
     x = *p;
     *p = NULL;
