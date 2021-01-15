@@ -68,6 +68,8 @@ _stressfs
 _usertests
 _wc
 _zombie
+_null_test
+_dereferenceNull
 *.img
 kernel
 *.asm
