@@ -2,11 +2,11 @@
 #include "types.h"
 #include "user.h"
 
-#define NULL 0
-#define stdout 1
+#define NULL 0x0
+
 int main()
 {
-    printf(stdout, "This is a test for NULL pointer deference \n");
+    printf(1, "Rodando programa de teste para ponteiro nulo...\n");
     int *p = NULL;
     printf(1, "*p: %d \n",*p);
     exit();
