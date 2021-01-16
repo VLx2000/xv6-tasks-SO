@@ -1,0 +1,20 @@
+Arquivos modificados para COW:
+
+proc.c      -> nova syscall (cowfork)
+vm.c        -> nova maneira de copiar mem (cow_copyuvm)
+trapasm.S   -> assembly para mover reg e mem
+mmu.h       -> nova flag PTE_COW (para mem compartilhada do cow)
+
+Criado:
+
+cowforktest.c   -> teste da nova syscall
+
+Arquivos modificados para nova syscall:
+
+Makefile
+Syscall.c
+syscall.h
+sysproc.c
+usys.S
+user.h
+defs.h  -> cabeçalho para definição de funçoes e syscalls de proc.c e vm.c
