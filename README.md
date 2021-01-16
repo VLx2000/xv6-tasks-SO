@@ -19,13 +19,13 @@ sudo apt install gcc make qemu
 chmod +x run.sh
 ./run.sh NUMERO_DA_TASK
 ```
-O script run.sh aceita numeros de 1 a 4, sendo estes os números das tasks feitas.
+O script run.sh aceita números de 1 a 4, sendo estes os números das tasks realizadas.
 
 ### Task 1
-Melhorando o visualizador de detalhes dos processos
+Melhorando o visualizador de detalhes dos processos (ctrl + P).
 ### Task 2
-Proteção de ponteiro nulo
+Proteção de ponteiro nulo (null_test).
 ### Task 3
-Proteção de segmentos somente leitura
+Proteção de segmentos somente leitura.
 ### Task 4
-Copy-on-write (COW)
+Copy-on-write (COW).
