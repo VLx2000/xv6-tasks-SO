@@ -13,6 +13,13 @@ sys_fork(void)
   return fork();
 }
 
+//!MODIFICADO
+int
+sys_cowfork(void)
+{
+  return cowfork();
+}
+
 int
 sys_exit(void)
 {
