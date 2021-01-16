@@ -30,6 +30,6 @@ then
 fi
 
 make clean
-make all
+make
 sudo make qemu
 cd -
