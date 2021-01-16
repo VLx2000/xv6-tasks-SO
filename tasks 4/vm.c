@@ -361,7 +361,8 @@ cow_copyuvm(pde_t *pgdir, uint sz)
     if(!(*pte & PTE_P))
       panic("copyuvm: page not present");
     pa = PTE_ADDR(*pte);
-    flags = PTE_FLAGS(*pte);
+    *pte &= ~PTE_W; 
+    flags = PTE_FLAGS(*pte);           //marcando para somente leitura
     if((mem = kalloc()) == 0)
       goto bad;
     memmove(mem, (char*)P2V(pa), PGSIZE);
