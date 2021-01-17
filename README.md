@@ -23,9 +23,21 @@ O script run.sh aceita números de 1 a 4, sendo estes os números das tasks real
 
 ### Task 1
 Melhorando o visualizador de detalhes dos processos (ctrl + P).
+```bash
+Aperte ctrl + P dentro do xv6 para maiores detalhes sobre processos
+```
 ### Task 2
 Proteção de ponteiro nulo (null_test).
+```bash
+Execute null_test dentro do xv6
+```
 ### Task 3
 Proteção de segmentos somente leitura.
+```bash
+Execute sanitytest dentro do xv6
+```
 ### Task 4
 Copy-on-write (COW).
+```bash
+
+```
