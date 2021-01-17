@@ -13,12 +13,14 @@ printf(int fd, const char *s, ...)
   write(fd, s, strlen(s));
 }
 */
+
+//Copia de forktest utilizando copy-on-write
 void
 cowforktest(void)
 {
   int n, pid;
 
-  printf(1, "fork test\n");
+  printf(1, "Testando cowfork implementado\n");
 
   for(n=0; n<N; n++){
     pid = cowfork();
