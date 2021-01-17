@@ -89,3 +89,25 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+//!MODIFICADO
+int
+sys_proteger(void){
+  int d;
+  int n = 0;
+  if(argint(0, &d) < 0 || argint(1, &n) < 0)  //testa se argumentos sao invalidos
+    return -1;
+  return proteger((void *)d,n);
+
+}
+
+int
+sys_desproteger(void){
+  int d;
+  int n = 0;
+  if(argint(0, &d) < 0 || argint(1, &n) < 0)  //testa se argumentos sao invalidos
+    return -1;
+  return desproteger((void *)d,n);
+
+}

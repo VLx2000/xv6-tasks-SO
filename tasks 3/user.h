@@ -23,6 +23,8 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int proteger(void *addr, int tam);
+int desproteger(void *addr, int tam);
 
 // ulib.c
 int stat(const char*, struct stat*);

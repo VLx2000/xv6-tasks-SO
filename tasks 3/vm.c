@@ -394,6 +394,49 @@ int copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
+//!MODIFICADO
+//transforma tabelas de pagina em somente leitura
+int
+proteger(void *addr, int tam){      
+  struct proc *curproc = myproc();
+  pte_t *pte;
+  int endereco = (int)addr;
+
+  for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
+    // Getting the address of the PTE in the current process's page table (pgdir)
+    // that corresponds to virtual address (i)
+    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
+    if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))     //PTE deve ser de usuario e estar presente
+      *pte = (*pte) & (~PTE_W) ;                          //Muda flag para somente leitura (apaga escrita)
+    else 
+      return -1;
+  }
+  //Carrega reg3 com endereco da pag de diretorio
+  lcr3(V2P(curproc->pgdir));  
+  return 0;
+}
+
+//transforma tabelas de pagina em leitura/escrita
+int
+desproteger(void *addr, int tam){
+  struct proc *curproc = myproc();
+  pte_t *pte;
+  int endereco = (int)addr;
+
+  for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
+    // Getting the address of the PTE in the current process's page table (pgdir)
+    // that corresponds to virtual address (i)
+    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
+    if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))   //PTE deve ser de usuario e estar presente
+      *pte = (*pte) | (PTE_W);                          //Coloca flag para escrita
+    else
+      return -1;
+  }
+  //Carrega reg3 com endereco da pag de diretorio
+  lcr3(V2P(curproc->pgdir));
+  return 0;
+}
+
 //PAGEBREAK!
 // Blank page.
 //PAGEBREAK!
