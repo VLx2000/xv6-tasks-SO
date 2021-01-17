@@ -22,22 +22,17 @@ chmod +x run.sh
 O script run.sh aceita números de 1 a 4, sendo estes os números das tasks realizadas.
 
 ### Task 1
-Melhorando o visualizador de detalhes dos processos (ctrl + P).
-```
-Aperte ctrl + P dentro do xv6 para maiores detalhes sobre processos
-```
-### Task 2
-Proteção de ponteiro nulo (null_test).
-```
-Execute null_test dentro do xv6
-```
-### Task 3
-Proteção de segmentos somente leitura.
-```
-Execute sanitytest dentro do xv6
-```
-### Task 4
-Copy-on-write (COW).
-```
+#### Melhorando o visualizador de detalhes dos processos.
+Aperte `(ctrl + P)` dentro do xv6 para maiores detalhes sobre processos
 
-```
+### Task 2
+#### Proteção de ponteiro nulo.
+Execute `null_test` dentro do xv6
+
+### Task 3
+#### Proteção de segmentos somente leitura.
+Execute `sanitytest` dentro do xv6
+
+### Task 4
+#### Copy-on-write (COW).
+
