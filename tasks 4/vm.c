@@ -351,7 +351,6 @@ cow_copyuvm(pde_t *pgdir, uint sz)
   pde_t *d;
   pte_t *pte;
   uint pa, i, flags;
-  char *mem;
 
   if((d = setupkvm()) == 0)
     return 0;
@@ -361,20 +360,26 @@ cow_copyuvm(pde_t *pgdir, uint sz)
     if(!(*pte & PTE_P))
       panic("copyuvm: page not present");
     pa = PTE_ADDR(*pte);
-    *pte &= ~PTE_W; 
-    flags = PTE_FLAGS(*pte);           //marcando para somente leitura
-    if((mem = kalloc()) == 0)
-      goto bad;
-    memmove(mem, (char*)P2V(pa), PGSIZE);
-    if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0) {
-      kfree(mem);
+    *pte |= PTE_COW;                    // Marcando com página compartilhada
+    *pte &= ~PTE_W;                     // Passa a permitir somente leitura 
+    flags = PTE_FLAGS(*pte);           
+    
+    if(mappages(d, (void*)i, PGSIZE, pa, flags) < 0) {
       goto bad;
     }
+
+    // Sempre que um filho aponta para a mesma página, incrementar a referencia em 1
+    incrementReferenceCount(pa);
+
   }
+  // Realizando flush no TLB devido às alteracões feitas
+  lcr3(V2P(pgdir));
   return d;
 
 bad:
   freevm(d);
+
+  lcr3(V2P(pgdir));
   return 0;
 }
 
@@ -427,3 +432,75 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 //PAGEBREAK!
 // Blank page.
 
+void pagefault(uint error_code) {
+
+  // cprintf("Ocorreu Page Fault!!!!\n");
+  // Registrado CR2 "pega" o endereco virtual em que ocorreu a falha
+  uint virtual_addr = rcr2();
+  pte_t *pte;
+
+  // Verificando se o endereco virtual é ilegal (não está entre os mapeados na tabela de pgs do processo)
+  if(virtual_addr >= KERNBASE || (pte = walkpgdir(myproc()->pgdir, (void*) virtual_addr, 0)) == 0 ||
+    !(*pte & PTE_P) || !(*pte & PTE_U)) {
+    
+      cprintf("Endereco Virtual Ilegal! cpu: %d\t endereco: 0x%x\n", mycpu()->apicid, virtual_addr);
+      cprintf("Eliminando o processo %s com pid = %d\n", myproc()->name, myproc()->pid);
+
+      myproc()->killed = 1;
+      return;
+  }
+
+  // Falha de Página causada por escrita
+  if(*pte & PTE_W) {
+    cprintf("Erro: %x, endereco 0x%x\n", error_code, virtual_addr);
+    panic("Já está permitido escrever\n");
+  }
+
+  // Checando se a página NÃO É compartilhada, ou seja, se PTE_COW = 0;
+  // Se NÃO for: elimina o processo
+  if(!(*pte & PTE_COW)) {
+    
+    myproc()->killed = 1;
+    return;
+    
+  } else {
+    uint physical_addr = PTE_ADDR(*pte);
+    uint refCount = getReferenceCount(physical_addr);
+    char *mem;
+
+    if (refCount > 1) {
+
+      // Alocando uma NOVA página para o processo
+      if ((mem = kalloc()) == 0) {
+        cprintf("Não foi possível alocar memória\n");
+        cprintf("Eliminando proc %s com pid = %d\n", myproc()->name, myproc()->pid);
+        myproc()->killed = 1;
+        return;
+      }
+
+      // Copiando o conteúdo da página original apontada pelo endereco virtual
+      memmove(mem, (char *)P2V(physical_addr), PGSIZE);
+
+      // Apontando o apontador pte para a nova página alocada
+      *pte = V2P(mem) | PTE_P | PTE_U | PTE_W;
+
+      // Como mudamos a direcão do apontador pte para a nova página
+      // Devemos decrementar o refCount em 1
+      decrementReferenceCount(physical_addr);
+
+    } 
+    else if(refCount == 1) {
+      // Removendo a restricão de leitura, pois a página só possui uma referência
+      // Alterando o status da página para NÃO compartilhada
+      *pte |= PTE_W;
+      *pte &= ~PTE_COW;
+
+    } else {
+      panic("Contagem de referencias está errada (nunca deve ser 0)\n");
+    }
+
+    // Realizando o flush no TLB para atualizar as informacões
+    lcr3(V2P(myproc()->pgdir));
+  }
+
+}

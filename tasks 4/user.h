@@ -24,6 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int cowfork(void);
+int getNumFreePages(void); // Nova syscall que retorna a quantidade de páginas livres
 
 // ulib.c
 int stat(const char*, struct stat*);
