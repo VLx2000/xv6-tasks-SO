@@ -402,11 +402,14 @@ proteger(void *addr, int tam){
   pte_t *pte;
   int endereco = (int)addr;
 
+  if (endereco % PGSIZE != 0)
+    panic("Endereco n esta alinhado");
+
   for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
     // coloca em pte a tabela de paginas de pgdir do processo correspondente ao endereço q esta em i
     pte = walkpgdir(curproc->pgdir,(void*) i, 0);
     if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))     //PTE deve ser de usuario e estar presente
-      *pte = (*pte) & (~PTE_W) ;                          //Muda flag para somente leitura (apaga escrita)
+      *pte &= ~PTE_W ;                          //Muda flag para somente leitura (apaga escrita)
     else 
       return -1;
   }
@@ -422,11 +425,14 @@ desproteger(void *addr, int tam){
   pte_t *pte;
   int endereco = (int)addr;
 
+  if (endereco % PGSIZE != 0)
+    panic("Endereco n esta alinhado");
+
   for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
     // coloca em pte a tabela de paginas de pgdir do processo correspondente ao endereço q esta em i
     pte = walkpgdir(curproc->pgdir,(void*) i, 0);
     if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))   //PTE deve ser de usuario e estar presente
-      *pte = (*pte) | (PTE_W);                          //Coloca flag para escrita
+      *pte |= PTE_W;                          //Coloca flag para escrita
     else
       return -1;
   }
