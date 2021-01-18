@@ -403,15 +403,14 @@ proteger(void *addr, int tam){
   int endereco = (int)addr;
 
   for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
-    // Getting the address of the PTE in the current process's page table (pgdir)
-    // that corresponds to virtual address (i)
+    // coloca em pte a tabela de paginas de pgdir do processo correspondente ao endereço q esta em i
     pte = walkpgdir(curproc->pgdir,(void*) i, 0);
     if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))     //PTE deve ser de usuario e estar presente
       *pte = (*pte) & (~PTE_W) ;                          //Muda flag para somente leitura (apaga escrita)
     else 
       return -1;
   }
-  //Carrega reg3 com endereco da pag de diretorio
+  //Carrega reg3 com endereco fisico de pgdir
   lcr3(V2P(curproc->pgdir));  
   return 0;
 }
@@ -424,15 +423,14 @@ desproteger(void *addr, int tam){
   int endereco = (int)addr;
 
   for (int i = endereco; i < (endereco + tam*PGSIZE); i += PGSIZE){
-    // Getting the address of the PTE in the current process's page table (pgdir)
-    // that corresponds to virtual address (i)
+    // coloca em pte a tabela de paginas de pgdir do processo correspondente ao endereço q esta em i
     pte = walkpgdir(curproc->pgdir,(void*) i, 0);
     if(pte && ((*pte & PTE_U)) && ((*pte & PTE_P)))   //PTE deve ser de usuario e estar presente
       *pte = (*pte) | (PTE_W);                          //Coloca flag para escrita
     else
       return -1;
   }
-  //Carrega reg3 com endereco da pag de diretorio
+  //Carrega reg3 com endereco fisico de pgdir
   lcr3(V2P(curproc->pgdir));
   return 0;
 }

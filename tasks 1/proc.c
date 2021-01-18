@@ -538,11 +538,11 @@ procdump(void)
         if ((PTE_FLAGS(p->pgdir[i]) & PTE_A) && (PTE_FLAGS(p->pgdir[i]) & PTE_U))   //se pag for acessada (32 - dec / 0x020 - hex) e for de usuario 
         {      
             pte_t* ptable = (pte_t*) PTE_ADDR(p->pgdir[i]);
-            cprintf(" pdir PTE %d, %d:\n  memory location of page table = %x\n", i, (uint)ptable >> 12, ptable);
+            cprintf(" pdir PTE %d, %d:\n  memory location of page table = %x\n", i, (uint)ptable >> 12, ptable); //PTE numero / PPN / endereco fisico da tabela de paginas
             for (int j = 0; j < NPTENTRIES; j++)  //percorre tabela de paginas
             {   
-                pte_t* endereco = (pte_t*)((pte_t*)P2V(ptable))[j];   //endereco recebe endereço virtual
-                uint flags = PTE_FLAGS(endereco);
+                pte_t* endereco = (pte_t*)((pte_t*)P2V(ptable))[j];   //endereco recebe endereço virtual da tabela de paginas j
+                uint flags = PTE_FLAGS(endereco);       //recebe as flags da tabela de paginas
                 if ((flags & PTE_A) && (flags & PTE_U))
                 {      
                     cprintf("  ptbl PTE %d, %d, %x\n", j, (uint)endereco >> 12, PTE_ADDR(endereco));
@@ -553,7 +553,7 @@ procdump(void)
     }
     cprintf("Page mappings:\n");
     for(int i = 0; i < cont; i++)
-        cprintf("%d -> %d\n",tabela_pag[i] >> 12,(V2P(tabela_pag[i])) >> 12); //imprime endereços armazenados
+        cprintf("%d -> %d\n",tabela_pag[i] >> 12,(V2P(tabela_pag[i])) >> 12); //imprime endereços armazenados //// n pag virtual -> n pag fisica
     cprintf("\n");
   }
 }
